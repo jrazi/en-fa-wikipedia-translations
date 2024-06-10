@@ -1,0 +1,69 @@
+# Note: This query is very unoptimized and barely survives the timeout set by wikipedia query service. It works, but there is a lot of room for improvement.
+# Both in terms of performance and in terms of the quality of the results.
+SELECT ?item ?enLabel ?faLabel ?enDescription ?faDescription ?enWikipediaUrl ?faWikipediaUrl WHERE {
+  {
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en,fa". }
+    ?item (wdt:P31|wdt:P361|wdt:P279|wdt:P101|wdt:P2579)/wdt:P279* wd:Q11660.
+  }
+  UNION
+  {
+    ?item (wdt:P31|wdt:P361|wdt:P279|wdt:P101|wdt:P2579)/wdt:P279* wd:Q2539.
+  }
+  UNION
+  {
+    ?item (wdt:P31|wdt:P361|wdt:P279|wdt:P101|wdt:P2579)/wdt:P279* wd:Q12483.
+  }
+  UNION
+  {
+    ?item (wdt:P31|wdt:P361|wdt:P279|wdt:P101|wdt:P2579)/wdt:P279* wd:Q21198.
+  }
+  UNION
+  {
+    ?item (wdt:P31|wdt:P361|wdt:P279|wdt:P101|wdt:P2579)/wdt:P279* wd:Q197536.
+  }
+  UNION
+  {
+    ?item (wdt:P31|wdt:P361|wdt:P279|wdt:P101|wdt:P2579)/wdt:P279* wd:Q8366.
+  }
+  UNION
+  {
+    ?item (wdt:P31|wdt:P361|wdt:P279|wdt:P101)/wdt:P279* wd:Q80993.
+  }
+  UNION
+  {
+    ?item (wdt:P31|wdt:P361|wdt:P279|wdt:P101|wdt:P2579)/wdt:P279* wd:Q82571.
+  }
+  OPTIONAL {
+    ?item rdfs:label ?enLabel.
+    FILTER((LANG(?enLabel)) = "en")
+  }
+  FILTER EXISTS { ?item rdfs:label ?enLabel . FILTER(LANG(?enLabel) = "en") }
+
+  OPTIONAL {
+    ?item rdfs:label ?faLabel.
+    FILTER((LANG(?faLabel)) = "fa")
+  }
+  FILTER EXISTS { ?item rdfs:label ?faLabel . FILTER(LANG(?faLabel) = "fa")}
+
+  OPTIONAL {
+    ?item schema:description ?enDescription.
+    FILTER((LANG(?enDescription)) = "en")
+  }
+  OPTIONAL {
+    ?item schema:description ?faDescription.
+    FILTER((LANG(?faDescription)) = "fa")
+  }
+  BIND(IRI(CONCAT("https://en.wikipedia.org/wiki/", ENCODE_FOR_URI(?enLabel))) AS ?enWikipediaUrl)
+  BIND(IRI(CONCAT("https://fa.wikipedia.org/wiki/", ENCODE_FOR_URI(?faLabel))) AS ?faWikipediaUrl)
+  
+  MINUS { ?item wdt:P31 wd:Q5. }
+  MINUS { ?item wdt:P31 wd:Q571. }
+  MINUS { ?item wdt:P31 wd:Q209163. }
+  MINUS { ?item wdt:P31 wd:Q7889. }
+  MINUS { ?item wdt:P31 wd:Q7397. }
+  MINUS { ?item wdt:P279 wd:Q7397. }
+  MINUS { ?item wdt:P31 wd:Q11424. }
+  MINUS { ?item wdt:P31 wd:Q1656682. }
+  MINUS { ?item wdt:P31 wd:Q2249149. }
+  MINUS { ?item wdt:P31 wd:Q2221906. }
+}
